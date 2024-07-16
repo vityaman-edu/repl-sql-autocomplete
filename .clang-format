@@ -15,3 +15,5 @@ BreakBeforeBraces: Attach
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+
+AccessModifierOffset: -2

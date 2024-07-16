@@ -9,6 +9,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Catch REQUIRED)
+find_package(Replxx REQUIRED)
 
 set(CXX_COMMON_FLAGS "-Wall -Wextra -Werror")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Weffc++ -Wsign-compare -Wshadow")
@@ -24,8 +25,18 @@ include_directories(src)
 
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS src/*.hpp src/*.cpp)
 add_executable(${PROJECT_ARTIFACT_APP} ${SRC})
+target_link_libraries(
+    ${PROJECT_ARTIFACT_APP}
+    ${CMAKE_BINARY_DIR}/replxx/install/lib/libreplxx.a # TODO: extract to variable
+)
 
-file(GLOB_RECURSE TEST CONFIGURE_DEPENDS src/*.hpp src/*/*.cpp test/*.hpp test/*.cpp)
+file(
+    GLOB_RECURSE TEST CONFIGURE_DEPENDS 
+    src/*.hpp src/*/*.cpp test/*.hpp test/*.cpp
+)
 add_executable(${PROJECT_ARTIFACT_TEST} ${TEST})
-target_link_libraries(${PROJECT_ARTIFACT_TEST} PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(
+    ${PROJECT_ARTIFACT_TEST} PRIVATE
+    ${CMAKE_BINARY_DIR}/replxx/install/lib/libreplxx.a
+    Catch2::Catch2WithMain)
 catch_discover_tests(${PROJECT_ARTIFACT_TEST})

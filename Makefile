@@ -8,6 +8,9 @@ compile: configure
 test: compile
 	(cd build; ctest)
 
+run: compile
+	(./build/repl-sql-autocomplete)
+
 clean:
 	rm -rf build
 	rm -rf .cache
