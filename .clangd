@@ -1,0 +1,21 @@
+CompileFlags:
+  Compiler: clang++
+  Add:
+    - -Werror -Wall -Wextra
+    - -Weffc++ -Wsign-compare -Wshadow -Wwrite-strings
+    - -Wpointer-arith -Winit-self -Wconversion
+    - -Wno-sign-conversion -Wundefined-inline
+Diagnostics:
+  UnusedIncludes: Strict
+  ClangTidy:
+    Add: "*"
+    Remove:
+      - llvmlibc-implementation-in-namespace
+      - llvmlibc-callee-namespace
+      - llvmlibc-restrict-system-libc-headers
+      - fuchsia-trailing-return
+      - misc-no-recursion
+InlayHints:
+  Designators: No
+  Enabled: No
+  DeducedTypes: No

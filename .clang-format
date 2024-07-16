@@ -1,0 +1,17 @@
+---
+BasedOnStyle: WebKit
+---
+Language: Cpp
+IndentWidth: 2
+ColumnLimit: 80
+
+SortIncludes: true
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+BreakBeforeBraces: Attach
+
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false

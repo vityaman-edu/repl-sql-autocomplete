@@ -1,0 +1,12 @@
+---
+Checks: '*,\
+  -llvmlibc-implementation-in-namespace,
+  -llvmlibc-restrict-system-libc-headers,
+  -llvmlibc-callee-namespace,
+  -llvmlibc-restrict-system-libc-headers,
+  -fuchsia-trailing-return,
+  -misc-no-recursion,
+  -altera-unroll-loops'
+WarningsAsErrors: '*'
+HeaderFilterRegex: ".*"
+FormatStyle: .clang-format
