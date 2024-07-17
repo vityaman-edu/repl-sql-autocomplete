@@ -8,8 +8,10 @@ namespace repl {
 
 class REPL {
 public:
-  auto input(const std::string& prompt) -> std::string;
-  auto out() -> std::ostream&;
+  explicit REPL();
+
+  auto input(const std::string &prompt) -> std::optional<std::string>;
+  auto out() -> std::ostream &;
 
 private:
   replxx::Replxx replxx;

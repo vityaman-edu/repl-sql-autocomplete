@@ -17,3 +17,5 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 
 AccessModifierOffset: -2
+
+NamespaceIndentation: NI_None

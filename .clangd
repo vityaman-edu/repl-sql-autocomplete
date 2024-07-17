@@ -15,6 +15,7 @@ Diagnostics:
       - llvmlibc-restrict-system-libc-headers
       - fuchsia-trailing-return
       - fuchsia-default-arguments-calls
+      - altera-unroll-loops
       - misc-no-recursion
 InlayHints:
   Designators: No
