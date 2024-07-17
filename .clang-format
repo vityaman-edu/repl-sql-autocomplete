@@ -18,4 +18,4 @@ AllowShortLoopsOnASingleLine: false
 
 AccessModifierOffset: -2
 
-NamespaceIndentation: NI_None
+NamespaceIndentation: None
