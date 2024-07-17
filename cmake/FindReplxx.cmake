@@ -9,5 +9,3 @@ ExternalProject_Add(
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
     TEST_COMMAND ""
 )
-
-include_directories(${CMAKE_BINARY_DIR}/replxx/install/include)

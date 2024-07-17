@@ -15,3 +15,6 @@ clean:
 	rm -rf build
 	rm -rf .cache
 	rm -rf compile_commands.json
+
+download-antlr:
+	wget https://www.antlr.org/download/antlr-4.13.1-complete.jar -O build/antlr-4.13.1-complete.jar
