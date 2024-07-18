@@ -6,16 +6,27 @@
 #include <BufferedTokenStream.h>
 #include <CharStream.h>
 #include <UnbufferedCharStream.h>
+#include <memory>
 
 namespace repl {
 
+auto SyntaxAnalysisPipeline::SetupFor(
+    const std::string& text) -> SyntaxAnalysisPipeline {
+  auto chars = std::make_unique<antlr4::ANTLRInputStream>(text);
+  auto lexer = std::make_unique<SQLiteLexer>(chars.get());
+  auto tokens = std::make_unique<antlr4::BufferedTokenStream>(lexer.get());
+  auto parser = std::make_unique<SQLiteParser>(tokens.get());
+  return {
+    .chars = std::move(chars),
+    .lexer = std::move(lexer),
+    .tokens = std::move(tokens),
+    .parser = std::move(parser),
+  };
+}
+
 auto ParseToAST(const std::string& text) -> std::string {
-  auto chars = antlr4::ANTLRInputStream(text);
-  auto lexer = SQLiteLexer(&chars);
-  auto tokens = antlr4::BufferedTokenStream(&lexer);
-  auto parser = SQLiteParser(&tokens);
-  auto* tree = parser.parse();
-  return tree->toStringTree(&parser);
+  auto pipeline = SyntaxAnalysisPipeline::SetupFor(text);
+  return pipeline.parser->parse()->toStringTree(true);
 }
 
 } // namespace repl

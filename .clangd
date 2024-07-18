@@ -16,6 +16,7 @@ Diagnostics:
       - fuchsia-trailing-return
       - fuchsia-default-arguments-calls
       - altera-unroll-loops
+      - altera-struct-pack-align
       - misc-no-recursion
 InlayHints:
   Designators: No

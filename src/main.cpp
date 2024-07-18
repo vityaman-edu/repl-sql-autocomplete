@@ -1,5 +1,6 @@
 #include "repl.hpp"
 #include "sql.hpp"
+#include "suggest.hpp"
 
 #include <cstring>
 #include <optional>
@@ -12,6 +13,7 @@ auto main() -> int {
   while (const auto maybe_input = repl.input(":) ")) {
     const auto& input = maybe_input.value();
     repl.out() << ";O " << ParseToAST(input) << std::endl;
+    Suggest(input);
   }
   return 0;
 }
