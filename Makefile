@@ -16,5 +16,12 @@ clean:
 	rm -rf .cache
 	rm -rf compile_commands.json
 
-download-antlr:
+build/antlr-4.13.1-complete.jar:
 	wget https://www.antlr.org/download/antlr-4.13.1-complete.jar -O build/antlr-4.13.1-complete.jar
+
+antlr-generate: build/antlr-4.13.1-complete.jar
+	cd src/sql/antlr && java \
+		-jar ../../../build/antlr-4.13.1-complete.jar \
+		-listener -visitor -Dlanguage=Cpp \
+		SQLiteLexer.g4 \
+		SQLiteParser.g4

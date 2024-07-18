@@ -7,3 +7,8 @@ build
 
 # ANTLR4
 antlr-*.jar
+.antlr
+src/sql/antlr/*.cpp
+src/sql/antlr/*.h
+*.interp
+*.tokens

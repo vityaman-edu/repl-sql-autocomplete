@@ -28,26 +28,34 @@ set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Winit-self -Wconversion")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-sign-conversion -Wundefined-inline")
 set(CMAKE_CXX_FLAGS ${CXX_COMMON_FLAGS})
 
+set(REPLXX_INSTALLATION ${CMAKE_BINARY_DIR}/replxx/install)
+set(REPLXX_INCLUDE_DIRS ${REPLXX_INSTALLATION}/include)
+set(REPLXX_STATIC ${REPLXX_INSTALLATION}/lib/libreplxx.a)
+
 include_directories(src)
-include_directories(${CMAKE_BINARY_DIR}/replxx/install/include)
+include_directories(${REPLXX_INCLUDE_DIRS})
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
-file(GLOB_RECURSE SRC CONFIGURE_DEPENDS src/*.hpp src/*.cpp)
+file(
+    GLOB_RECURSE SRC CONFIGURE_DEPENDS 
+    src/*.hpp src/*.cpp
+)
 add_executable(${PROJECT_ARTIFACT_APP} ${SRC})
 target_link_libraries(
     ${PROJECT_ARTIFACT_APP}
-    ${CMAKE_BINARY_DIR}/replxx/install/lib/libreplxx.a # TODO: extract to variable
+    ${REPLXX_STATIC}
     antlr4_static
 )
 
 file(
     GLOB_RECURSE TEST CONFIGURE_DEPENDS 
-    src/*.hpp src/*/*.cpp test/*.hpp test/*.cpp
+    src/*.hpp src/*/*.cpp 
+    test/*.hpp test/*.cpp
 )
 add_executable(${PROJECT_ARTIFACT_TEST} ${TEST})
 target_link_libraries(
     ${PROJECT_ARTIFACT_TEST} PRIVATE
-    ${CMAKE_BINARY_DIR}/replxx/install/lib/libreplxx.a
+    ${REPLXX_STATIC}
     antlr4_static
     Catch2::Catch2WithMain)
 catch_discover_tests(${PROJECT_ARTIFACT_TEST})
