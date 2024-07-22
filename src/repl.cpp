@@ -16,39 +16,21 @@ using Completions = replxx::Replxx::completions_t;
 using Color = replxx::Replxx::Color;
 using Hints = replxx::Replxx::hints_t;
 
-auto candidates(const std::string& word) -> std::vector<std::string> {
-  return std::vector<std::string> {
-    "select",
-    "from",
-    "where",
-    "group",
-    "test",
-    "who",
-    "finally",
-    "session",
-    "transform",
-    "translate",
-  }
-  | std::views::filter([&](const std::string& hint) {
-      return hint.starts_with(word);
-    }) | std::ranges::to<std::vector>();
-}
-
-auto complete(const std::string& text, int& length) -> Completions {
-  return candidates(text.substr(text.size() - length))
-      | std::views::transform([](const auto& candidate) {
-          return Completion(candidate, Color::BLUE);
-        })
-      | std::ranges::to<std::vector>();
-}
-
 } // namespace
 
 REPL::REPL() {
   constexpr auto MaxHintRows = 4;
   constexpr auto MaxHistorySize = 32;
 
-  replxx.set_completion_callback(complete);
+  const auto callback = [this](const std::string& text, int& /* length */) {
+    return engine.Suggest(text)
+        | std::views::transform([](const auto& candidate) {
+            return Completion(candidate, Color::BLUE);
+          })
+        | std::ranges::to<std::vector>();
+  };
+  replxx.set_completion_callback(callback);
+
   replxx.set_max_hint_rows(MaxHintRows);
   replxx.set_max_history_size(MaxHistorySize);
 }

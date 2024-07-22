@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sql/suggest/engine.hpp"
 #include <ostream>
 #include <replxx.hxx>
 #include <string>
@@ -15,6 +16,7 @@ public:
 
 private:
   replxx::Replxx replxx;
+  sql::suggest::SuggestionEngine engine;
 };
 
 } // namespace repl
