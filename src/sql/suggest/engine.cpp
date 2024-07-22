@@ -26,7 +26,18 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
       /* context = */ nullptr, timeoutMs, /* cancel = */ nullptr);
   assert(!candidates.cancelled);
 
-  return {};
+  std::vector<Candidate> result;
+
+  for (const auto& [token, follow] : candidates.tokens) {
+    const auto& vocabulary = lexer.getVocabulary();
+
+    auto display = vocabulary.getDisplayName(token);
+    display = display.substr(1, display.size() - 2);
+
+    result.emplace_back(std::move(display));
+  }
+
+  return result;
 }
 
 } // namespace repl::sql::suggest
