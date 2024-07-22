@@ -22,14 +22,21 @@ REPL::REPL() {
   constexpr auto MaxHintRows = 4;
   constexpr auto MaxHistorySize = 32;
 
-  const auto callback = [this](const std::string& text, int& /* length */) {
+  const auto completion = [this](const auto& text, int& /* length */) {
     return engine.Suggest(text)
         | std::views::transform([](const auto& candidate) {
             return Completion(candidate, Color::BLUE);
           })
         | std::ranges::to<std::vector>();
   };
-  replxx.set_completion_callback(callback);
+
+  const auto hint = [this](const auto& text, int& /* length */, Color& color) {
+    color = Color::YELLOW;
+    return engine.Suggest(text);
+  };
+
+  replxx.set_completion_callback(completion);
+  replxx.set_hint_callback(hint);
 
   replxx.set_max_hint_rows(MaxHintRows);
   replxx.set_max_history_size(MaxHistorySize);
