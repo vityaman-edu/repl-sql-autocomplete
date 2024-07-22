@@ -1,5 +1,5 @@
 configure:
-	CXX=/usr/bin/clang++ cmake -S . -B build
+	CXX=/usr/bin/clang++ cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
 
 compile:
 	cmake --build build
