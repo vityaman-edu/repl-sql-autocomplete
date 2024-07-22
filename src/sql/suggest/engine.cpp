@@ -112,7 +112,8 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
     if (IsVariableToken(token)) {
       display.insert(std::begin(display), '<');
       display.insert(std::end(display), '>');
-    } else {
+    } else if (display.starts_with('\'')) {
+      assert(display.ends_with('\''));
       display.erase(std::begin(display));
       display.erase(std::prev(std::end(display)));
     }
