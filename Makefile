@@ -23,5 +23,5 @@ antlr-generate: build/antlr-4.13.1-complete.jar
 	cd src/sql/antlr && java \
 		-jar ../../../build/antlr-4.13.1-complete.jar \
 		-listener -visitor -Dlanguage=Cpp \
-		SQLiteLexer.g4 \
-		SQLiteParser.g4
+		YQL.g4 \
+		YQL.g4

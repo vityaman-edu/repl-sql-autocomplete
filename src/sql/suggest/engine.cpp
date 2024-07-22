@@ -1,11 +1,10 @@
 #include "engine.hpp"
-#include "sql/antlr/SQLiteLexer.h"
+#include "sql/antlr/YQLLexer.h"
 #include "sql/suggest/candidate.hpp"
 #include <ParserRuleContext.h>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
 #include <ranges>
 
 namespace repl::sql::suggest {
@@ -38,11 +37,10 @@ auto Lowercase(const std::string& text) -> std::string {
 
 auto IsVariableToken(std::size_t token) -> bool {
   switch (token) {
-  case SQLiteLexer::BIND_PARAMETER:
-  case SQLiteLexer::BLOB_LITERAL:
-  case SQLiteLexer::IDENTIFIER:
-  case SQLiteLexer::NUMERIC_LITERAL:
-  case SQLiteLexer::STRING_LITERAL:
+  case YQLLexer::STRING_VALUE:
+  case YQLLexer::INTEGER_VALUE:
+  case YQLLexer::ID_PLAIN:
+  case YQLLexer::ID_QUOTED:
     return true;
   default:
     return false;
@@ -58,7 +56,7 @@ SuggestionEngine::SuggestionEngine()
     , c3(&parser) {
   c3.showResult = true;
   c3.ignoredTokens = {
-    SQLiteLexer::EOF,
+    YQLLexer::EOF,
   };
 }
 
@@ -95,7 +93,7 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
     caretTokenIndex += 1;
   }
 
-  antlr4::ParserRuleContext* context = parser.parse();
+  antlr4::ParserRuleContext* context = parser.sql_query();
 
   const auto contextStr
       = (context != nullptr) ? context->toStringTree() : "NULL";

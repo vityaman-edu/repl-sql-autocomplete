@@ -1,8 +1,8 @@
 #pragma once
 
 #include "antlr/c3/CodeCompletionCore.hpp"
-#include "sql/antlr/SQLiteLexer.h"
-#include "sql/antlr/SQLiteParser.h"
+#include "sql/antlr/YQLLexer.h"
+#include "sql/antlr/YQLParser.h"
 #include "sql/suggest/candidate.hpp"
 #include <ANTLRInputStream.h>
 #include <cstddef>
@@ -17,9 +17,9 @@ public:
 
 private:
   antlr4::ANTLRInputStream chars;
-  SQLiteLexer lexer;
+  YQLLexer lexer;
   antlr4::BufferedTokenStream tokens;
-  SQLiteParser parser;
+  YQLParser parser;
   c3::CodeCompletionCore c3;
 
   const std::size_t timeoutMs = 200;
