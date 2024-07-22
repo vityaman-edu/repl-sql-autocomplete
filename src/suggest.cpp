@@ -1,7 +1,7 @@
 #include "suggest.hpp"
 #include "sql.hpp"
 
-#include "antlr-c3/CodeCompletionCore.hpp"
+#include "antlr/c3/CodeCompletionCore.hpp"
 
 #include <cassert>
 #include <cstddef>
@@ -26,14 +26,6 @@ auto Suggest(const std::string& prefix) -> std::vector<std::string> {
   }
 
   size_t caretTokenIndex = pipeline.tokens->size() - 2;
-  {
-    std::cerr << "tokens: " << std::endl;
-    for (std::size_t i = 0; i < pipeline.tokens->size(); ++i) {
-      std::cerr << " " << i << ": " << pipeline.tokens->get(i)->toString()
-                << std::endl;
-    }
-    std::cerr << "caretTokenIndex:" << caretTokenIndex << std::endl;
-  }
 
   antlr4::ParserRuleContext* context = nullptr;
   size_t timeoutMS = 200;
@@ -42,27 +34,7 @@ auto Suggest(const std::string& prefix) -> std::vector<std::string> {
       = engine.collectCandidates(caretTokenIndex, context, timeoutMS, cancel);
   assert(!candidates.cancelled);
 
-  std::vector<std::string> result;
-  for (const auto& [token, following] : candidates.tokens) {
-    const auto& vocabulary = pipeline.lexer->getVocabulary();
-    std::cerr << "token: " << vocabulary.getDisplayName(token) << ""
-              << std::endl;
-    for (const auto next : following) {
-      std::cerr << "  next -> symbolic: '" << vocabulary.getSymbolicName(next) << "'"
-                << ", literal: '" << vocabulary.getLiteralName(next) << "'"
-                << std::endl;
-    }
-  }
-  for (const auto& [index, candidate] : candidates.rules) {
-    for (const auto& rule : candidate.ruleList) {
-      const auto& parser = *pipeline.parser;
-      std::cerr << "index: " << index //
-                << ", startTokenIndex: " << candidate.startTokenIndex //
-                << ", rule: " << parser.getRuleNames()[rule] //
-                << std::endl;
-    }
-  }
-  return result;
+  return {};
 }
 
 } // namespace repl

@@ -42,11 +42,6 @@ auto complete(const std::string& text, int& length) -> Completions {
       | std::ranges::to<std::vector>();
 }
 
-auto hint(const std::string& text, int& length, Color& color) -> Hints {
-  color = Color::BLUE;
-  return candidates(text.substr(text.size() - length));
-}
-
 } // namespace
 
 REPL::REPL() {
@@ -54,7 +49,6 @@ REPL::REPL() {
   constexpr auto MaxHistorySize = 32;
 
   replxx.set_completion_callback(complete);
-  replxx.set_hint_callback(hint);
   replxx.set_max_hint_rows(MaxHintRows);
   replxx.set_max_history_size(MaxHistorySize);
 }

@@ -1,14 +1,14 @@
 configure:
 	CXX=/usr/bin/clang++ cmake -S . -B build
 
-compile: configure
+compile:
 	cmake --build build
 	cp build/compile_commands.json compile_commands.json
 
-test: compile
+test:
 	(cd build; ctest)
 
-run: compile
+run:
 	(./build/repl-sql-autocomplete)
 
 clean:
