@@ -48,7 +48,7 @@ SuggestionEngine::SuggestionEngine()
   lexer.removeErrorListeners();
   parser.removeErrorListeners();
 
-  c3.showResult = false;
+  c3.showResult = true;
   c3.ignoredTokens = {
     YQLLexer::EOF,
     YQLLexer::STRING_VALUE,
