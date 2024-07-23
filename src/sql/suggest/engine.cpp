@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <ranges>
+#include <sstream>
+#include <string>
 
 namespace repl::sql::suggest {
 
@@ -64,24 +66,9 @@ SuggestionEngine::SuggestionEngine()
 }
 
 auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
-  chars.load(prefix, /* lenient = */ false);
-  lexer.reset();
-  lexer.setInputStream(&chars);
-  tokens.setTokenSource(&lexer);
-  parser.reset();
+  Reset(prefix);
 
   tokens.fill();
-
-  std::vector<std::string> words;
-  for (std::size_t i = 0; i < tokens.size(); ++i) {
-    const auto& vocabulary = lexer.getVocabulary();
-    const auto* token = tokens.get(i);
-    auto word = token->toString();
-    word += ", type: ";
-    word += vocabulary.getSymbolicName(token->getType());
-    words.emplace_back(std::move(word));
-  }
-
   if (tokens.size() < 2) {
     return {};
   }
@@ -92,41 +79,69 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
   };
 
   auto caretTokenIndex = tokens.size() - 2;
-  if (lastWord.size() == 0) {
+  if (lastWord.empty()) {
     caretTokenIndex += 1;
   }
 
-  antlr4::ParserRuleContext* context = parser.sql_query();
-
-  const auto contextStr
-      = (context != nullptr) ? context->toStringTree() : "NULL";
-
-  const auto candidates = c3.collectCandidates(
-      caretTokenIndex, context, timeoutMs, /* cancel = */ nullptr);
-  assert(!candidates.cancelled);
+  const auto candidates = C3Suggest(caretTokenIndex);
 
   std::vector<Candidate> result;
 
   for (const auto& [token, follow] : candidates.tokens) {
-    const auto& vocabulary = lexer.getVocabulary();
-
-    auto display = vocabulary.getDisplayName(token);
-
-    if (IsVariableToken(token)) {
-      display.insert(std::begin(display), '<');
-      display.insert(std::end(display), '>');
-    } else if (display.starts_with('\'')) {
-      assert(display.ends_with('\''));
-      display.erase(std::begin(display));
-      display.erase(std::prev(std::end(display)));
-    }
-
-    if (isSuitable(display) || IsVariableToken(token)) {
-      result.emplace_back(std::move(display));
+    auto candidate = PostProcessed(token);
+    if (isSuitable(candidate) || IsVariableToken(token)) {
+      result.emplace_back(std::move(candidate));
     }
   }
 
   return result;
+}
+
+auto SuggestionEngine::Reset(const std::string& prefix) -> void {
+  chars.load(prefix, /* lenient = */ false);
+  lexer.reset();
+  lexer.setInputStream(&chars);
+  tokens.setTokenSource(&lexer);
+  parser.reset();
+}
+
+auto SuggestionEngine::DebugTokens() -> std::vector<std::string> {
+  const auto& vocabulary = lexer.getVocabulary();
+  return tokens.getTokens(0, tokens.size())
+      | std::views::transform([&](auto* token) {
+          const auto symbolic = vocabulary.getSymbolicName(token->getType());
+
+          std::stringstream word;
+          word << token->toString() << ", type: " << symbolic;
+          return word.str();
+        })
+      | std::ranges::to<std::vector>();
+}
+
+auto SuggestionEngine::C3Suggest(
+    std::size_t caretTokenIndex) -> c3::CandidatesCollection {
+  antlr4::ParserRuleContext* context = parser.sql_query();
+  auto candidates = c3.collectCandidates(
+      caretTokenIndex, context, timeoutMs, /* cancel = */ nullptr);
+  assert(!candidates.cancelled);
+  return candidates;
+}
+
+auto SuggestionEngine::PostProcessed(std::size_t token) -> std::string {
+  const auto& vocabulary = lexer.getVocabulary();
+
+  auto display = vocabulary.getDisplayName(token);
+
+  if (IsVariableToken(token)) {
+    display.insert(std::begin(display), '<');
+    display.insert(std::end(display), '>');
+  } else if (display.starts_with('\'')) {
+    assert(display.ends_with('\''));
+    display.erase(std::begin(display));
+    display.erase(std::prev(std::end(display)));
+  }
+
+  return display;
 }
 
 } // namespace repl::sql::suggest

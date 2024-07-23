@@ -16,6 +16,12 @@ public:
   auto Suggest(const std::string& prefix) -> Candidates;
 
 private:
+  auto Reset(const std::string& prefix) -> void;
+  auto C3Suggest(std::size_t caretTokenIndex) -> c3::CandidatesCollection;
+  auto PostProcessed(std::size_t token) -> std::string;
+
+  auto DebugTokens() -> std::vector<std::string>;
+
   antlr4::ANTLRInputStream chars;
   YQLLexer lexer;
   antlr4::BufferedTokenStream tokens;
