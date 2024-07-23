@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include "sql/antlr/YQLLexer.h"
+#include "sql/antlr/YQLParser.h"
 #include "sql/suggest/candidate.hpp"
 #include <ParserRuleContext.h>
 #include <cassert>
@@ -37,18 +38,6 @@ auto Lowercase(const std::string& text) -> std::string {
       | std::ranges::to<std::string>();
 }
 
-auto IsVariableToken(std::size_t token) -> bool {
-  switch (token) {
-  case YQLLexer::STRING_VALUE:
-  case YQLLexer::INTEGER_VALUE:
-  case YQLLexer::ID_PLAIN:
-  case YQLLexer::ID_QUOTED:
-    return true;
-  default:
-    return false;
-  }
-}
-
 } // namespace
 
 SuggestionEngine::SuggestionEngine()
@@ -59,9 +48,32 @@ SuggestionEngine::SuggestionEngine()
   lexer.removeErrorListeners();
   parser.removeErrorListeners();
 
-  c3.showResult = false;
+  c3.showResult = true;
   c3.ignoredTokens = {
     YQLLexer::EOF,
+    YQLLexer::STRING_VALUE,
+    YQLLexer::INTEGER_VALUE,
+    YQLLexer::ID_PLAIN,
+    YQLLexer::ID_QUOTED,
+  };
+
+  c3.preferredRules = {
+    YQLParser::RuleId_table,
+  };
+
+  names = {
+    { YQLParser::RuleId_table,
+        {
+            "user",
+            "teacher",
+            "student",
+            "admin",
+            "promotion_request",
+            "homework",
+            "homework_submission",
+            "homework_feedback",
+            "auth_yandex",
+        } },
   };
 }
 
@@ -83,8 +95,16 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
 
   for (const auto& [token, follow] : candidates.tokens) {
     auto candidate = PostProcessed(token);
-    if (isSuitable(candidate) || IsVariableToken(token)) {
+    if (isSuitable(candidate)) {
       result.emplace_back(std::move(candidate));
+    }
+  }
+
+  for (const auto& [rule, stack] : candidates.rules) {
+    for (const auto& candidate : names.at(rule)) {
+      if (isSuitable(candidate)) {
+        result.emplace_back(candidate);
+      }
     }
   }
 
@@ -129,11 +149,13 @@ auto SuggestionEngine::PostProcessed(std::size_t token) -> std::string {
   const auto& vocabulary = lexer.getVocabulary();
 
   auto display = vocabulary.getDisplayName(token);
+  auto literal = vocabulary.getLiteralName(token);
+  auto symbolic = vocabulary.getSymbolicName(token);
 
-  if (IsVariableToken(token)) {
-    display.insert(std::begin(display), '<');
-    display.insert(std::end(display), '>');
-  } else if (display.starts_with('\'')) {
+  (void)literal;
+  (void)symbolic;
+
+  if (display.starts_with('\'')) {
     assert(display.ends_with('\''));
     display.erase(std::begin(display));
     display.erase(std::prev(std::end(display)));

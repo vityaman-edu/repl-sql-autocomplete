@@ -6,6 +6,9 @@
 #include "sql/suggest/candidate.hpp"
 #include <ANTLRInputStream.h>
 #include <cstddef>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace repl::sql::suggest {
 
@@ -27,6 +30,8 @@ private:
   antlr4::BufferedTokenStream tokens;
   YQLParser parser;
   c3::CodeCompletionCore c3;
+
+  std::unordered_map<std::size_t, std::vector<std::string>> names;
 
   const std::size_t timeoutMs = 200;
 };
