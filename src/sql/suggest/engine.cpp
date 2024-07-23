@@ -68,20 +68,14 @@ SuggestionEngine::SuggestionEngine()
 auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
   Reset(prefix);
 
-  tokens.fill();
-  if (tokens.size() < 2) {
-    return {};
-  }
-
   const auto lastWord = Lowercase(LastWord(prefix));
   const auto isSuitable = [&](const std::string& candidate) {
     return Lowercase(candidate).starts_with(lastWord);
   };
 
-  auto caretTokenIndex = tokens.size() - 2;
-  if (lastWord.empty()) {
-    caretTokenIndex += 1;
-  }
+  tokens.fill();
+  const auto caretTokenIndex
+      = (2 <= tokens.size()) ? tokens.size() - 2 : tokens.size() - 1;
 
   const auto candidates = C3Suggest(caretTokenIndex);
 
@@ -92,6 +86,10 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
     if (isSuitable(candidate) || IsVariableToken(token)) {
       result.emplace_back(std::move(candidate));
     }
+  }
+
+  for (auto& candidate : result) {
+    candidate += ' ';
   }
 
   return result;
