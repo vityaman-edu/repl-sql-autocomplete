@@ -48,7 +48,7 @@ SuggestionEngine::SuggestionEngine()
   lexer.removeErrorListeners();
   parser.removeErrorListeners();
 
-  c3.showResult = true;
+  c3.showResult = false;
   c3.ignoredTokens = {
     YQLLexer::EOF,
     YQLLexer::STRING_VALUE,
@@ -149,11 +149,6 @@ auto SuggestionEngine::PostProcessed(std::size_t token) -> std::string {
   const auto& vocabulary = lexer.getVocabulary();
 
   auto display = vocabulary.getDisplayName(token);
-  auto literal = vocabulary.getLiteralName(token);
-  auto symbolic = vocabulary.getSymbolicName(token);
-
-  (void)literal;
-  (void)symbolic;
 
   if (display.starts_with('\'')) {
     assert(display.ends_with('\''));
