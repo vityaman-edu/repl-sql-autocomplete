@@ -48,33 +48,60 @@ SuggestionEngine::SuggestionEngine()
   lexer.removeErrorListeners();
   parser.removeErrorListeners();
 
-  c3.showResult = true;
+  c3.showResult = false;
   c3.ignoredTokens = {
     YQLLexer::EOF,
-    YQLLexer::STRING_VALUE,
+    YQLLexer::EQUALS,
+    YQLLexer::EQUALS2,
+    YQLLexer::NOT_EQUALS,
+    YQLLexer::NOT_EQUALS2,
+    YQLLexer::LESS,
+    YQLLexer::LESS_OR_EQ,
+    YQLLexer::GREATER,
+    YQLLexer::GREATER_OR_EQ,
+    YQLLexer::SHIFT_LEFT,
+    YQLLexer::ROT_LEFT,
+    YQLLexer::AMPERSAND,
+    YQLLexer::PIPE,
+    YQLLexer::DOUBLE_PIPE,
+    YQLLexer::STRUCT_OPEN,
+    YQLLexer::STRUCT_CLOSE,
+    YQLLexer::PLUS,
+    YQLLexer::MINUS,
+    YQLLexer::TILDA,
+    YQLLexer::SLASH,
+    YQLLexer::BACKSLASH,
+    YQLLexer::PERCENT,
+    YQLLexer::SEMICOLON,
+    YQLLexer::DOT,
+    YQLLexer::COMMA,
+    YQLLexer::LPAREN,
+    YQLLexer::RPAREN,
+    YQLLexer::QUESTION,
+    YQLLexer::COLON,
+    YQLLexer::AT,
+    YQLLexer::DOUBLE_AT,
+    YQLLexer::DOLLAR,
+    YQLLexer::QUOTE_DOUBLE,
+    YQLLexer::QUOTE_SINGLE,
+    YQLLexer::BACKTICK,
+    YQLLexer::LBRACE_CURLY,
+    YQLLexer::RBRACE_CURLY,
+    YQLLexer::CARET,
+    YQLLexer::NAMESPACE,
+    YQLLexer::ARROW,
+    YQLLexer::RBRACE_SQUARE,
+    YQLLexer::LBRACE_SQUARE,
     YQLLexer::INTEGER_VALUE,
+    YQLLexer::REAL,
+    YQLLexer::BLOB,
+    YQLLexer::DIGITS,
+    YQLLexer::STRING_VALUE,
     YQLLexer::ID_PLAIN,
     YQLLexer::ID_QUOTED,
   };
 
-  c3.preferredRules = {
-    YQLParser::RuleId_table,
-  };
-
-  names = {
-    { YQLParser::RuleId_table,
-        {
-            "user",
-            "teacher",
-            "student",
-            "admin",
-            "promotion_request",
-            "homework",
-            "homework_submission",
-            "homework_feedback",
-            "auth_yandex",
-        } },
-  };
+  c3.preferredRules = {};
 }
 
 auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
@@ -97,14 +124,6 @@ auto SuggestionEngine::Suggest(const std::string& prefix) -> Candidates {
     auto candidate = PostProcessed(token);
     if (isSuitable(candidate)) {
       result.emplace_back(std::move(candidate));
-    }
-  }
-
-  for (const auto& [rule, stack] : candidates.rules) {
-    for (const auto& candidate : names.at(rule)) {
-      if (isSuitable(candidate)) {
-        result.emplace_back(candidate);
-      }
     }
   }
 

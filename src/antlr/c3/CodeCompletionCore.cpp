@@ -496,9 +496,9 @@ RuleEndStatus CodeCompletionCore::processRule(
   //    in non trivial grammars, especially with (recursive) expressions and of
   //    course when invoking code completion multiple times.
 
-  if (!followSetsByATN.contains(typeid(parser))) {
-    followSetsByATN[typeid(parser)] = FollowSetsPerState();
-  }
+  // if (!followSetsByATN.contains(typeid(parser))) {
+  //   followSetsByATN[typeid(parser)] = FollowSetsPerState();
+  // }
 
   FollowSetsPerState& setsPerState = followSetsByATN[typeid(parser)];
   if (!setsPerState.contains(startState->stateNumber)) {

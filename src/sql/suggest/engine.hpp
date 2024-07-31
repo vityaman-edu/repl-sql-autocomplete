@@ -31,8 +31,6 @@ private:
   YQLParser parser;
   c3::CodeCompletionCore c3;
 
-  std::unordered_map<std::size_t, std::vector<std::string>> names;
-
   const std::size_t timeoutMs = 200;
 };
 
