@@ -1,7 +1,9 @@
 #include "repl.hpp"
 #include "replxx.hxx"
 
+#include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -35,8 +37,13 @@ REPL::REPL() {
     return engine.Suggest(text);
   };
 
+  const auto highlight = [](const auto& /*text*/, std::vector<Color>& colors) {
+    std::fill(std::begin(colors), std::end(colors), Color::BLUE);
+  };
+
   replxx.set_completion_callback(completion);
   replxx.set_hint_callback(hint);
+  replxx.set_highlighter_callback(highlight);
 
   replxx.set_max_hint_rows(MaxHintRows);
   replxx.set_max_history_size(MaxHistorySize);
