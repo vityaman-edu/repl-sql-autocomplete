@@ -7,7 +7,7 @@
 #include <ANTLRInputStream.h>
 #include <cstddef>
 #include <string>
-#include <unordered_map>
+#include <string_view>
 #include <vector>
 
 namespace repl::sql::suggest {
